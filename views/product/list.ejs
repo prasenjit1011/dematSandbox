@@ -6,7 +6,8 @@
         <div style="float: left; width: 20%; margin: 5px; padding: 15px; border: 1px solid #000; background-color: rgb(180, 226, 226);">
             <form action="/product/add/?_csrf=<%=csrfToken%>" method="post" enctype="multipart/form-data" >
                 <input type="text" name="productName" placeholder="Product Name" style="margin:0 0 10px 0px;;" />
-                <input type="text" name="productPrice" placeholder="Product Price" /> &nbsp; 
+                <input type="text" name="productPrice" placeholder="Product Price" style="margin:0 0 10px 0px;;" /> &nbsp; 
+                <input type="text" name="productDetail" placeholder="Product Details" /> &nbsp; 
                 <input type="file" name="ProductImage"  style="margin:10px 0 10px 0px;;" />
                 <input type="submit" value="Save" style="cursor: pointer;" />
             </form>

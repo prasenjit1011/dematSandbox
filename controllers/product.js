@@ -29,10 +29,11 @@ exports.addProduct = (req, res, next)=>{
 
     const productName   = req.body.productName;
     const productPrice  = req.body.productPrice;
+    const productDetail = req.body.productDetail;
     const ProductData   = req.file;
     const productImage  = ProductData.filename;//ProductData.destination+'/'+
     
-    const product = new Product({name: productName, price: productPrice, imageUrl: productImage });
+    const product = new Product({name: productName, price: productPrice, description:productDetail, imageUrl: productImage });
     return product.save()
             .then(result=>{
                 console.log(result);
