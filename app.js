@@ -40,6 +40,7 @@ app.use(csrfProtect);
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('ProductImage'));
 
 
+
 const shop = require('./routes/shop');
 app.use(shop);
 
@@ -60,6 +61,20 @@ app.use('/', (req, res, next)=>{
     //res.send('-: Welcome :-');
     res.render('home', {sessionData:req.session});
 });
+
+
+const mypromise = require('./mypromise');
+console.log('-: Promise Data : ',
+    mypromise
+        .then((val) => {
+            console.log('-: Return Promise Data : ',val);
+        })
+        .catch(
+            (err) => console.log(err)
+        ),
+    ' -: Waiting for promise data :- '
+);
+
 
 
 

@@ -57,3 +57,5 @@ token     		= jwt.sign(userdata, 'mysecret', { expiresIn: '1h' }); <br /><br />
 authorization	= req.get('Authorization'); <br />
 token			= authorization.split(' ')[1]; <br />
 data 			= jwt.verify(token, 'mysecret'); <br />
+
+## Javascript Promise 
