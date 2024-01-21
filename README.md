@@ -58,4 +58,4 @@ authorization	= req.get('Authorization'); <br />
 token			= authorization.split(' ')[1]; <br />
 data 			= jwt.verify(token, 'mysecret'); <br />
 
-## Javascript Promise 
+## Javascript Promise with Example ( mypromise.js and app.js )
