@@ -10,22 +10,22 @@ nodemon app.js <br />
 
 ### API list 
 
-#### Get Movie List : <br />
-API Url: http://localhost:3000/movies <br />
+#### API to get movie list : 
+URL: http://localhost:3000/movies <br />
 Method : GET <br />
 
 
-#### Generate authorization brearer JWT token to access admin : <br />
-API Url: http://localhost:3000/gettoken <br />
+#### API to generate authorization brearer JWT token to access admin : 
+URL: http://localhost:3000/gettoken <br />
 Method : GET <br />
 
 
-#### Add movie : <br />
-API Url: http://localhost:3000/movies <br />
+#### API to add movie : 
+URL: http://localhost:3000/movies <br />
 Method : POST <br />
-Header authorization brearer token required :  <br />
+Header authorization brearer token required :
 
-##### Body params for add movie  <br />
+##### Body params for add movie  
 {<br />
     "title": Required, <br />
     "genre": Required, <br />
@@ -34,11 +34,10 @@ Header authorization brearer token required :  <br />
 }<br /><br />
 
 
-#### Delete movie : <br />
-API Url: http://localhost:3000/movies/:id <br />
+#### API to delete movie : 
+URL: http://localhost:3000/movies/:id <br />
 Method : GET <br />
 Header authorization brearer token required : 
-
 ##### ** Movie id is required
 
 
