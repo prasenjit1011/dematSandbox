@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
-const sequelize = require('../util/mysql_sequelize_database');
+const dbconnect = require('../util/mysql_sequelize_database');
 
-const Item = sequelize.define('articles', {
+const Item = dbconnect.define('articles', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

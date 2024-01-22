@@ -9,7 +9,21 @@ exports.getItemList = (req, res, next) => {
         .then(fetchData=>{
             return res.render('./article/list', {pageNo : pageNo, data:fetchData, pageTitle:'Item list using Asyn method with Mysql Sequelize.'});
         })
-        .catch(err=>console.log(err));
-
-    const fetchData = [];
+        .catch(err=>{
+            console.log(err);
+            return res.redirect('/');
+        });
 }
+
+
+exports.deleteItem = async (req, res, next) => {
+
+    await Item.destroy({
+        where: {
+            title: "Robin"
+        },
+    });
+
+    return res.end('-- Data deleted from table --');
+}
+
