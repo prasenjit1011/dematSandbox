@@ -1,5 +1,5 @@
 const express   = require('express');
-const isAuth    = require('../middleware/isAuth');
+const isAuthJwt = require('../middleware/isAuthJwt');
 const router    = express.Router();
 
 
@@ -7,8 +7,8 @@ const movieCtrl = require('../controllers/movieController');
 router.get('/movies', movieCtrl.getMovieList);
 router.get('/search', movieCtrl.getSearchMovieList);
 
-router.post('/movies', isAuth, movieCtrl.addMovie);
-router.put('/movies/:id',  movieCtrl.updateMovie);
-router.delete('/movies/:id', isAuth, movieCtrl.deleteMovie);
+router.post('/movies', isAuthJwt, movieCtrl.addMovie);
+router.put('/movies/:id', isAuthJwt,  movieCtrl.updateMovie);
+router.delete('/movies/:id', isAuthJwt, movieCtrl.deleteMovie);
 
 module.exports = router;
