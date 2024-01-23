@@ -4,6 +4,7 @@ const router    = express.Router();
 
 
 const movieCtrl = require('../controllers/movieController');
+router.get('/movies/list', movieCtrl.getMovieListPage);
 router.get('/movies', movieCtrl.getMovieList);
 router.get('/search', movieCtrl.getSearchMovieList);
 

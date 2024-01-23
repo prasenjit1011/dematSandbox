@@ -2,6 +2,10 @@ const nodeCache     = require("node-cache");
 const myCache       = new nodeCache();
 const MovieModel    = require('../models/movieModel');
 
+exports.getMovieListPage  = async (req, res, next) => {
+    console.log('========================');
+    res.render('./movies/list');
+}
 
 exports.getMovieList = async (req, res, next)=>{
     let data   = myCache.get("movieList");

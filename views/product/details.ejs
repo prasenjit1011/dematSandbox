@@ -1,13 +1,11 @@
+<%- include('../includes/header.ejs') %>
+<div>
+    <h3>
+        -: Product details using mongoose :- &nbsp; 
+        <a href="/" style="color: #111;">Go to home page</a>
+    </h3><hr />
 
-<div style="margin: auto; padding: 10px; height: 100%; background-color:blueviolet;">
-    
-    <div style="margin: auto; padding: 10px; width: 80%; height: 100%; background-color:b4e2e2;">
-        <h3>
-            -: Product details using mongoose :- &nbsp; 
-            <a href="/" style="color: #111;">Go to home page</a>
-        </h3><hr />
-
-        <h3>Product Name : <%= shopdata['name'] %></h3>
-        <h3>Product Price : <%= shopdata['price'] %></h3>
-    </div>
+    <h3>Product Name : <%= shopdata['name'] %></h3>
+    <h3>Product Price : <%= shopdata['price'] %></h3>
 </div>
+<%- include('../includes/footer.ejs') %>
