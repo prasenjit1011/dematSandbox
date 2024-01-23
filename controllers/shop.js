@@ -36,8 +36,8 @@ exports.addShop = (req, res, next) => {
     const newShop = new Shop(req.body.shopName+' '+parseInt(100*Math.random()), req.body.shopAddress);
     newShop.save()
             .then(result=>{
-                console.log(result);
-                res.redirect('/shop/list')
+                console.log('Shop added :: ', result);
+                return res.redirect('/shop/list')
             })
             .catch(err=>console.log(err));
 }

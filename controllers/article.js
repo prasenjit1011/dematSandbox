@@ -13,6 +13,7 @@ exports.getArticleList = async (req, res, next) => {
 
 
 exports.getArticleListing = (req, res, next) => {
+    const pageNo     = req.query.page ?? 0;
 
     return article.fetchAll()
                     .then(([rows, fieldData])=>{

@@ -35,7 +35,7 @@ app.use(express.static('images'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session(params));
-app.use(csrfProtect);
+//app.use(csrfProtect);
 
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('ProductImage'));
 app.use((req, res, next) => {
@@ -55,8 +55,10 @@ app.use(jwt);
 const movieRoute    = require('./routes/movieRoute');
 app.use(movieRoute);
 
+
+app.use(csrfProtect);
 const shop = require('./routes/shop');
-app.use(shop);
+app.use(csrfProtect, shop);
 
 const product = require('./routes/product');
 app.use(product);
