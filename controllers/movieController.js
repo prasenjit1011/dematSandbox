@@ -92,7 +92,7 @@ exports.deleteMovie = async (req, res, next) => {
         .findByIdAndDelete(movieId)
         .then(data=>{
             myCache.del( "movieList" );
-            return res.send({status:true, msg:"Movie deleted successfully.", data:data});
+            return res.send({status:true, msg:"Movie deleted successfully."});
         })
         .catch(err=>{
             return res.send({status:false, msg:"Movie not deleted successfully!"});

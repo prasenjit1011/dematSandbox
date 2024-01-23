@@ -5,7 +5,7 @@ const movieSchema = new Schema({
     
     title: { type: String, required: true },
     genre: { type: String, required: true },
-    rating: {type: String, require: true },
+    rating: {type: Number, require: true },
     link: { type: String, required: true }
 });
 
