@@ -59,3 +59,10 @@ token			= authorization.split(' ')[1]; <br />
 data 			= jwt.verify(token, 'mysecret'); <br />
 
 ## Javascript Promise with Example ( mypromise.js and app.js )
+
+
+
+
+
+
+

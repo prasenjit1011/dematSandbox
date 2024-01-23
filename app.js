@@ -32,23 +32,34 @@ const app   = express();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 app.use(express.static('images'));
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(session(params));
 app.use(csrfProtect);
 
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('ProductImage'));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 
 
+const auth = require('./routes/auth');
+app.use(auth);
+
+const jwt = require('./routes/jwt');
+app.use(jwt);
+
+const movieRoute    = require('./routes/movieRoute');
+app.use(movieRoute);
 
 const shop = require('./routes/shop');
 app.use(shop);
 
 const product = require('./routes/product');
 app.use(product);
-
-const auth = require('./routes/auth');
-app.use(auth);
 
 const article = require('./routes/article');
 app.use(article);
