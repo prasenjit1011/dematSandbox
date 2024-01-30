@@ -7,7 +7,10 @@ exports.getStockList = (req, res, next) => {
     fetch(apiUrl)
             .then(result=>result.json())
             .then(apiData => {
-                let resData = {"status":200,msg:"LTP fetch successfully!", apiData:apiData['data']};
+                
+                let sidData = {"ADAG":"Adani Total Gas","ADAI":"Adani Transmission","ADAN":"Adani Power Ltd","ADEL":"Adani Enterprises","AET":"Aether Industries","APTU":"APTUS VALUE","BION":"BIOCON","CAMP":"Campus Activewear","DABU":"DABIND","ESAF":"ESAF Small Finance Bank Limited","HAP":"Happy Forgings","IGAS":"Indraprastha Gas Limited - IGL","INFY":"Infosys Ltd","INOXI":"Inox India Limited","IRE":"IREDA - Indian Renewable Energy Development Agency","IRM":"IRM Energy","KTKM":"Kotak Mahindra","RELI":"RELIND","SULA":"Sula Vineyards Limited","WIPR":"Wipro"};
+                let resData = {"status":200,msg:"LTP fetch successfully!", sidData:sidData, apiData:apiData['data']};
+
                 return res.end(JSON.stringify(resData));
 
             })
