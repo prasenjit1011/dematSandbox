@@ -12,4 +12,6 @@ router.post('/movies', isAuthJwt, movieCtrl.addMovie);
 router.put('/movies/:id', isAuthJwt,  movieCtrl.updateMovie);
 router.delete('/movies/:id', isAuthJwt, movieCtrl.deleteMovie);
 
+router.get('/employee/departtment/list', movieCtrl.getEmployeeDept);
+
 module.exports = router;

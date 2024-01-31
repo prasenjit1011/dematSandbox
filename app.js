@@ -82,7 +82,7 @@ const mypromise = require('./mypromise');
 console.log('-: Promise Data : ',
     mypromise
         .then((val) => {
-            console.log('-: Return Promise Data : ',val);
+            console.log('-: Return Promise Data => ', val['data'][0]['sid'], ':', val['data'][0]['price']);
         })
         .catch(
             (err) => console.log(err)
