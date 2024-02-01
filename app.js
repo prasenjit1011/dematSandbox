@@ -71,6 +71,9 @@ app.use(article);
 const item = require('./routes/item');
 app.use(item);
 
+const deptEmp = require('./routes/deptEmp');
+app.use(deptEmp);
+
 app.use('/', (req, res, next)=>{
     console.log('-: Welcome :-');
     //res.send('-: Welcome :-');
@@ -82,7 +85,7 @@ const mypromise = require('./mypromise');
 console.log('-: Promise Data : ',
     mypromise
         .then((val) => {
-            console.log('-: Return Promise Data => ', val['data'][0]['sid'], ':', val['data'][0]['price']);
+            console.log('-: Return Promise Data => ', val['data'][0]['sid'], ':', val['data'][0]['price'], '\n\n');
         })
         .catch(
             (err) => console.log(err)

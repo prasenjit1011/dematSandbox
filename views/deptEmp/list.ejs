@@ -1,0 +1,11 @@
+<%- include('../includes/header.ejs') %>
+<div>
+    <h3><%= pageTitle %></h3>
+    <% for(let emp of data){ %>
+        <div class="smallbox">
+            <p><%= emp.name %></p>
+            <p><%= emp.dept_id.title %></p>
+        </div>
+    <%  }   %>
+</div>
+<%- include('../includes/footer.ejs') %>
