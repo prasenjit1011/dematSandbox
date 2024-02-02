@@ -41,9 +41,9 @@ input{
 .smallbox{
     float: left; 
     width: 15%; 
-    height: 100px;
-    margin: 5px; 
-    padding: 8px; 
+    height: 80px;
+    margin: 2px; 
+    padding: 2px; 
     border: 1px solid #000; 
     background-color: #b4e2e2;
 }

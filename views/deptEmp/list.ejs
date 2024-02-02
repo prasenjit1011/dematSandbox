@@ -1,10 +1,18 @@
 <%- include('../includes/header.ejs') %>
 <div>
     <h3><%= pageTitle %></h3>
-    <% for(let emp of data){ %>
+    <% for(let emp of empData){ %>
         <div class="smallbox">
-            <p><%= emp.name %></p>
-            <p><%= emp.dept_id.title %></p>
+            <%= emp.name %>, 
+            <%= emp.dept_id.title %>
+        </div>
+    <%  }   %>
+    <br />
+    <h3>Department Data</h3>
+    <% for(let dept of empData){ %>
+        <div class="smallbox">
+            <p><%= dept.name %></p>
+            
         </div>
     <%  }   %>
 </div>
