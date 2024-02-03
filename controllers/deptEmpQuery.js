@@ -6,7 +6,10 @@ const Department    = require("../models/department");
 deptArr = async function(){
     console.log('-------HERE----------');
 
-    dept = await Department.aggregate([
+    
+    dept = [];
+    
+    /*await Department.aggregate([
         {
             $lookup: {
                 From: 'mydepartment',

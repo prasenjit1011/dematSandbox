@@ -2,6 +2,41 @@
 const Employee      = require("../models/employee");
 const Department    = require("../models/department");
 
+exports.getEmployeeDept = async (req, res, next) => {
+
+    let arr = [45,85,7887];
+
+    return deptList = await Department
+                                .find()
+                                .then(async data=>{
+                                    allEmpList  = await Employee.find().populate('dept_id').limit(100);
+                                    empdata = await data.map(async x=>{
+                                        return await Employee.find({dept_id:x._id}).limit(10);
+                                    });
+                                    empdata = await Promise.all(empdata);
+                                    newdata = data.map((x,y)=>{
+                                        deptemp = empdata
+                                                    .filter((p,q)=>{
+                                                        if(p[0].dept_id.toString() == x._id.toString()){
+                                                            return p;
+                                                        }
+                                                    })
+                                                    .map(p=>p);
+                                        return {dept_id:x._id,title:x.title,empList:deptemp[0]};
+                                    });
+
+                                    // console.log(newdata);
+                                    // console.log(data);
+                                    //return res.send({pageTitle:"X", empData:allEmpList, deptEmpData:newdata});
+                                    return res.render('./deptEmp/list',{pageTitle:"X", empData:allEmpList, deptEmpData:newdata});
+                                });
+
+
+    return res.send(JSON.stringify(deptList));
+}
+
+
+
 exports.addDeptEmp = async (req, res, next) => {
 
     console.log('-------------addDeptEmp------------');
@@ -87,21 +122,29 @@ empArr = function(){
 }
 
 
-exports.getEmployeeDept = async (req, res, next) => {
+exports.getEmployeeDeptSSS = async (req, res, next) => {
 
+    let arr = [45,85,77];
+
+
+
+    return res.send(JSON.stringify(arr));
+    /*
     deptArr = [];
     dept = await Department.find().limit(3)
                     .then(function(result){
-                        return result;
+                        //return result;
                         let empArr = result.map(async function(x,y){
                             empList = await Employee.find().limit(1);
                             return {id:x._id, name:x.title, empList:empList};
                         });
+
+                        return res.send(JSON.stringify(empArr));
                         return empArr;
                         
                     });
 
-    
+  /*  
     x = await dept.map(async function(a,b){
         return await a.then(async function(r){
             //console.log(r);
@@ -112,7 +155,7 @@ exports.getEmployeeDept = async (req, res, next) => {
 
     return res.send(JSON.stringify(x));
 
-
+*/
 
 
 

@@ -4,15 +4,18 @@
     <% for(let emp of empData){ %>
         <div class="smallbox">
             <%= emp.name %>, 
-            <%= emp.dept_id.title %>
+            <%= emp.dept_id.title %>, 
+            
         </div>
     <%  }   %>
     <br />
     <h3>Department Data</h3>
-    <% for(let dept of empData){ %>
+    <% for(let dept of deptEmpData){ %>
         <div class="smallbox">
-            <p><%= dept.name %></p>
-            
+            <p><%= dept.title %></p>
+            <% for(let deptEmp of dept.empList){ %>
+                <%= deptEmp.name %>, 
+            <%  }   %>
         </div>
     <%  }   %>
 </div>
