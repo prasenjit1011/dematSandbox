@@ -11,12 +11,12 @@ var EmployeeSchema = new Schema({
   },
   dept_id: {
     type: Schema.Types.ObjectId,
-    ref: "Department"
+    ref: "mydepartment"
   }
 });
 
 // Create model from the schema
-var Employee = mongoose.model("Employee", EmployeeSchema);
+var Employee = mongoose.model("myemployee", EmployeeSchema);
 
 // Export model
 module.exports = Employee;

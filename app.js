@@ -1,3 +1,4 @@
+console.clear();
 console.log('\n\n-: App Started :-');
 
 const express       = require('express');
@@ -47,7 +48,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+/** 
 const auth = require('./routes/auth');
 app.use(auth);
 
@@ -69,7 +70,7 @@ const article = require('./routes/article');
 app.use(article);
 
 const item = require('./routes/item');
-app.use(item);
+app.use(item);*/
 
 const deptEmp = require('./routes/deptEmp');
 app.use(deptEmp);
@@ -80,7 +81,7 @@ app.use('/', (req, res, next)=>{
     res.render('home', {sessionData:req.session});
 });
 
-
+/*
 const mypromise = require('./mypromise');
 console.log('-: Promise Data : ',
     mypromise
@@ -92,7 +93,10 @@ console.log('-: Promise Data : ',
         ),
     ' -: Waiting for promise data :- '
 );
+/* */
 
+
+require('./controllers/deptEmpQuery');
 
 
 

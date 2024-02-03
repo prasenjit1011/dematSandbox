@@ -6,11 +6,39 @@ exports.addDeptEmp = async (req, res, next) => {
 
     console.log('-------------addDeptEmp------------');
     let data        = [];
-    let subjects    = ['Math', 'Science', 'Geography'];//, 'Politics', 'History', 'Physics', 'Chemistry', 'IT', 'Biology', 'Medical'];
-    let employees   = ['Sanjay', 'Ajoy', 'Vijay', 'Sunil', 'Riyan', 'Babai', 'Bibhu', 'Debjit', 'Sampa', 'Rohan', 'Rosalia', 'Zara']
+    let data2       = ['-XX-'];
+    let department  = [{name:'Math'}, {name:'Science'}, {name:'Geography'}];
+
+
+    Department.collection.drop();
+
+
+    deptArr = await department.map(async function(d){
+                        const { _id } = await new Department({title: d.name})
+                                                    .save()
+                                                    .then((x)=>{
+                                                        return x;
+                                                    });
+                    
+                        console.log('-: XXX1 :-', _id, d.name);
+
+                        return _id;
+                    });
+
+    console.log('-: XXXXX :-', deptArr);
+    
+    res.send(data2);
+
+    /*
+
+    let department  = [{name:'Math - '+parseInt(100*Math.random())}];//, {name:'Science'}, {name:'Geography'}];//, 'Politics', 'History', 'Physics', 'Chemistry', 'IT', 'Biology', 'Medical'];
+    let employees   = [{name:'Sanjay'}, {name:'Ajoy'}, {name:'Vijay'}, {name:'Sunil'}, {name:'Riyan'}, {name:'Babai'}, {name:'Bibhu'}, {name:'Debjit'}, {name:'Sampa'}, {name:'Rohan'}, {name:'Rosalia'}, {name:'Zara'}]
     
     Department.collection.drop();
-    Employee.collection.drop();
+    //Employee.collection.drop();
+
+
+
 
     i = 0;
     j = 0;
@@ -30,9 +58,11 @@ exports.addDeptEmp = async (req, res, next) => {
                     console.log('Emp ID : ', empData['_id']);
                     j++;
                 }
+
+                
                 i++;
                     
-            });
+            });*/
 
     return res.end(JSON.stringify(data));
 }
@@ -58,6 +88,86 @@ empArr = function(){
 
 
 exports.getEmployeeDept = async (req, res, next) => {
+
+    deptArr = [];
+    dept = await Department.find().limit(3)
+                    .then(function(result){
+                        return result;
+                        let empArr = result.map(async function(x,y){
+                            empList = await Employee.find().limit(1);
+                            return {id:x._id, name:x.title, empList:empList};
+                        });
+                        return empArr;
+                        
+                    });
+
+    
+    x = await dept.map(async function(a,b){
+        return await a.then(async function(r){
+            //console.log(r);
+            return await r;
+        });
+    });
+
+
+    return res.send(JSON.stringify(x));
+
+
+
+
+
+/*
+
+
+
+console.log('--Mongo Emp Arr--');//.populate("dept_id")
+
+let empData = await Employee.find().limit(1)
+                    .then(function(result) {
+                        return result;
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                        return err;
+                    });
+
+let deptData = await Department.find().limit(2)
+                    .then(async function(result) {
+                        return result;
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                        return err;
+                    });
+
+
+
+
+let deptEmp = deptData.map(function(d){
+    return {title:d.title, myEmpData:Employee.find().limit(1).then(r=>r)};
+});
+
+console.log('\n\n******\n', deptData);
+console.log('\n\n------\n', deptEmp);
+console.log('\n******\n\n\n');
+res.send(deptEmp);
+
+//console.log('\n-: empData :-\n',empData);
+//console.log('\n-: deptData :-\n', deptData);
+//console.log('\n-----', xp);
+/*
+let x2 = deptData.map(r=>{
+                    console.log(r);
+                    return r;
+                });
+
+console.log(x2);
+*/
+
+}
+
+exports.getEmployeeDeptErr01 = async (req, res, next) => {
+    
     let data    = [];
     let cnt     = 999;
     let empData = await Employee.find()
