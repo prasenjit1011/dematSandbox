@@ -1,7 +1,11 @@
 console.log('\n\n-: App Started :-');
 
-const express   = require('express');
-const app       = express();
+const express       = require('express');
+const mongoose      = require('mongoose');
+const MONGODB_URI   = "mongodb+srv://tester:tester1234@cluster0.hlicuim.mongodb.net/Mydb?retryWrites=true&w=majority";
+
+
+const app   = express();
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
@@ -22,3 +26,4 @@ app.use('/', (req, res, next)=>{
 
 console.log('-: App Running :-');
 app.listen(3000);
+mongoose.connect(MONGODB_URI).then(result => app.listen(3001)).catch(err=>console.log(err));
