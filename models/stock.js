@@ -6,22 +6,18 @@ const stockSchema = new Schema({
     type: String,
     required: true
   },
-  name: {
+  share_name: {
     type: String,
     required: true
   },
-  price: {
+  qty: {
     type: Number,
     required: true
   },
-  description: {
-    type: String,
-    required: false
-  },
-  imageUrl: {
-    type: String,
-    required: false
+  sold_qty: {
+    type: Number,
+    required: true
   }
 });
 
-module.exports = mongoose.model('stock', stockSchema);
+module.exports = mongoose.model('demat', stockSchema);

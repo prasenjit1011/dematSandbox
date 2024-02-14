@@ -2,7 +2,7 @@ console.log('\n\n-: App Started :-');
 
 const express       = require('express');
 const mongoose      = require('mongoose');
-const MONGODB_URI   = "mongodb+srv://tester:tester1234@cluster0.hlicuim.mongodb.net/Mydb?retryWrites=true&w=majority";
+const MONGODB_URI   = "mongodb+srv://tester:tester1234@cluster0.hlicuim.mongodb.net/demat?retryWrites=true&w=majority";
 
 
 const app   = express();
@@ -25,5 +25,5 @@ app.use('/', (req, res, next)=>{
 });
 
 console.log('-: App Running :-');
-app.listen(3000);
-mongoose.connect(MONGODB_URI).then(result => app.listen(3001)).catch(err=>console.log(err));
+//app.listen(3000);
+mongoose.connect(MONGODB_URI).then(result =>{ console.log(null); app.listen(3000)}).catch(err=>console.log(err));
