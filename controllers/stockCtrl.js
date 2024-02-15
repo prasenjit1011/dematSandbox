@@ -15,8 +15,8 @@ exports.getStockList = async (req, res, next) => {
         sidData[data.sid] = {"sid": data.sid, "share_name": data.share_name, "qty": data.qty, "sold_qty": data.sold_qty, "cqty": (data.qty-data.sold_qty)};
     });
 
-    console.log('sidData typeof : ',typeof sidData);
-    console.log('sidData : ', sidData);
+    //console.log('sidData typeof : ',typeof sidData);
+    //console.log('sidData : ', sidData);
 
     //return res.end(JSON.stringify(sidData));
     /* */
