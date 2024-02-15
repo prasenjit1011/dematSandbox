@@ -2,22 +2,22 @@ const mongoose  = require('mongoose');
 const Schema    = mongoose.Schema;
 
 const stockSchema = new Schema({
-  name: {
+  sid:{
     type: String,
     required: true
   },
-  price: {
+  share_name: {
+    type: String,
+    required: true
+  },
+  qty: {
     type: Number,
     required: true
   },
-  description: {
-    type: String,
-    required: false
-  },
-  imageUrl: {
-    type: String,
-    required: false
+  sold_qty: {
+    type: Number,
+    required: true
   }
 });
 
-module.exports = mongoose.model('stock', stockSchema);
+module.exports = mongoose.model('demat', stockSchema);
