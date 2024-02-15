@@ -25,5 +25,5 @@ app.use('/', (req, res, next)=>{
 });
 
 console.log('-: App Running :-');
-//app.listen(3000);
+//app.listen(3000);///
 mongoose.connect(MONGODB_URI).then(result =>{ console.log(null); app.listen(3000)}).catch(err=>console.log(err));
