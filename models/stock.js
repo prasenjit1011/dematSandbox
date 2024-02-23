@@ -17,7 +17,11 @@ const stockSchema = new Schema({
   sold_qty: {
     type: Number,
     required: true
-  }
+  },
+  sid_grow:{
+    type: String,
+    required: true
+  },
 });
 
 module.exports = mongoose.model('demat', stockSchema);
