@@ -67,9 +67,37 @@ exports.getNetworth = async (req, res, next) => {
     return res.end(JSON.stringify(balanceData));
 }
 
+function weeklydata(apiData){
+    let arr2 = [4445];
+
+
+    let d           = null;
+    let d1          = null;
+    let d2          = null;
+    apiData.forEach((val, key)=>{
+        //console.log('Val :: ', val);
+    
+        d   = new Date(val[0]*1000).getDate()+'/'+new Date(val[0]*1000).getMonth()+'/'+new Date(val[0]*1000).getFullYear();        
+        if(d != d1){
+            filterData = {};
+            arr1    = [];
+            apiData.forEach((x,y)=>{
+                d2 = new Date(x[0]*1000).getDate()+'/'+new Date(x[0]*1000).getMonth()+'/'+new Date(val[0]*1000).getFullYear();
+                if(d == d2){
+                    arr1.push(x[1].toFixed(2));
+                }
+            });
+            arr2[d] = {min:Math.min(...arr1), max:Math.max(...arr1)};
+            
+        }
+        d1 = d;
+    });;
+
+    return arr2;
+}
 
 exports.getShareDetails = async (req, res, next) => {
-    let data            = undefined;
+    //let data            = undefined;
     let duration        = undefined;
     let interval        = undefined;
     let apiUrl          = undefined;
@@ -88,16 +116,42 @@ exports.getShareDetails = async (req, res, next) => {
                                                 .catch(err=>console.log(err));
 
 
-
-                                    
-    let code        = shareDetails[0].sid_grow;
+    let code        = shareDetails[0].sid_grow;  
     
+    let arr1        = [];
+    let arr2        = [];
+    //let weeklyData  = [];
+    let d           = null;
+    let d1          = null;
+    let d2          = null;
     duration        = 'weekly';
     interval        = '1';
     apiUrl          = apiList['groww']+code+'/'+duration+'?intervalInDays='+interval+'&minimal=true';;
-    let weeklyData = await fetch(apiUrl).then(result=>result.json())
-                            .then(apiData => { return apiData['candles']; })
-                            .catch(err=>{ return []; });
+    let weeklyData  = await fetch(apiUrl).then(result=>result.json())
+                            .then((apiData) => { 
+                                let result = new Promise((resolve, reject) => {
+                                                apiData['candles'].forEach((val, key)=>{
+                                                    d   = new Date(val[0]*1000).getDate()+'/'+new Date(val[0]*1000).getMonth()+'/'+new Date(val[0]*1000).getFullYear();        
+                                                    if(d != d1){
+                                                        filterData = {};
+                                                        arr1    = [];
+                                                        apiData['candles'].forEach((x,y)=>{
+                                                            d2 = new Date(x[0]*1000).getDate()+'/'+new Date(x[0]*1000).getMonth()+'/'+new Date(val[0]*1000).getFullYear();
+                                                            if(d == d2){
+                                                                arr1.push(x[1].toFixed(2));
+                                                            }
+                                                        });
+                                                        arr2.push({dtd: val[0], date:d, min:Math.min(...arr1), max:Math.max(...arr1)});
+                                                    }
+                                                    d1 = d;
+                                                });;
+                                                resolve(arr2);
+                                            });
+
+                                //console.log('XYZ', data);
+                                return result;
+                            })
+                            .catch(err=>{ console.log('Arr2 : Err', err);return []; });
 
 
     duration        = '1y';
@@ -115,31 +169,7 @@ exports.getShareDetails = async (req, res, next) => {
                             .catch(err=>{ return []; });
 
 
-
-/*
-    let dtd     = undefined;
-    let dtd1    = undefined;
-    let min     = undefined;
-    let max     = undefined;
-    //let weeklyData = [];
-
-/*
-    apiData.forEach((val, key)=>{
-        dtd = new Date(val[0]*1000).getMonth()+'_'+new Date(val[0]*1000).getDate();
-        if(dtd !== dtd1){
-            min = 0;
-            max = 999999;
-        }
-
-
-        console.log('Weekly ', dtd);
-        //weeklyData['145236'] = { minVal:0, maxVal:0 };
-    });
-
-    console.log(weeklyData);*/
-
-    //weeklyData  = apiData;
-    data = { shareDetails:shareDetails[0], transactionDetails:transactionDetails, weeklyData:weeklyData, oneYearData:oneYearData, historyData:historyData };
+    let data = { shareDetails:shareDetails[0], transactionDetails:transactionDetails, weeklyData:weeklyData, oneYearData:oneYearData, historyData:historyData };
     return res.end(JSON.stringify(data));
 
 }
