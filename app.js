@@ -12,7 +12,19 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
+const multer        = require('multer');
+const fileStorage   = multer.diskStorage({
+                                destination: 'public/tradebook',
+                                filename: (req, file, cb) => { cb(null, parseInt(100*Math.random())+'-'+file.originalname); }
+                            });
 
+
+const fileFilter = (req, file, cb) => {
+    cb(null, true);
+                                        //if ( file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg' ) { cb(null, true); } 
+                                        //else { cb(null, false); }
+                                    };
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('tradebook'));
 
 const stock = require('./routes/stockapi');
 app.use(stock);

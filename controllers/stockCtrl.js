@@ -178,10 +178,15 @@ exports.updateStockData = async (req, res, next) => {
     if(cacheSidData === undefined &&  cacheApiData === undefined){
         let resData = {"status":201, msg:"LTP cache data not found!"};
         return res.end(JSON.stringify(resData));
-    }
+    }   
+}
 
-
-
+exports.TradeBook = async (req, res, next) => {
+    const tradeBookData = req.file;
+    const productImage  = tradeBookData.filename;//ProductData.destination+'/'+
+    //const product       = new Product({name: productName, price: productPrice, description:productDetail, imageUrl: productImage });
+    let resData = {"status":201, msg:"LTP cache data not found!"};
+    return res.end(JSON.stringify(resData));
     
 }
 
