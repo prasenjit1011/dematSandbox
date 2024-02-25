@@ -4,6 +4,9 @@ const router    = express.Router();
 const stockCtrl = require('../controllers/stockCtrl');
 router.get('/stock/list', stockCtrl.getStockList);
 router.get('/networth', stockCtrl.getNetworth);
-router.get('/stock/details/:sid', stockCtrl.getShareDetails)
+router.get('/stock/details/:sid', stockCtrl.getShareDetails);
+router.get('/update/stock/details', stockCtrl.updateStockData);
+
+
 
 module.exports  = router;
