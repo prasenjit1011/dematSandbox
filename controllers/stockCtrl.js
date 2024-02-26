@@ -1,8 +1,14 @@
+const fs            = require("fs");
+const { parse }     = require("csv-parse");
+const csvParser     = require("csv-parser");
 const nodeCache     = require("node-cache");
 const myCache       = new nodeCache();
 const Stock         = require('../models/stock');
 const Balancesheet  = require('../models/balancesheet');
 const Transaction   = require('../models/transaction');
+const Tradebook     = require('../models/tradebook');
+const lib           = require("../controllers/library");
+    
 
 const apiList       = {
                         tickertape: 'https://quotes-api.tickertape.in/quotes?sids=',//DABU
@@ -105,7 +111,7 @@ exports.getShareDetails = async (req, res, next) => {
                                     .catch(err=>console.log(err));
 
 
-    let transactionDetails  = await Transaction.find({sid:sid}).sort({created_at: "ascending"}).limit(300)
+    let transactionDetails  = await Tradebook.find({sid:sid}).sort({created_at: "ascending"}).limit(300)
                                                 .then(data=>{
                                                     return data;
                                                 })
@@ -181,13 +187,64 @@ exports.updateStockData = async (req, res, next) => {
     }   
 }
 
-exports.TradeBook = async (req, res, next) => {
+
+
+exports.tradeBook = async (req, res, next) => {
     const tradeBookData = req.file;
-    const productImage  = tradeBookData.filename;//ProductData.destination+'/'+
-    //const product       = new Product({name: productName, price: productPrice, description:productDetail, imageUrl: productImage });
-    let resData = {"status":201, msg:"LTP cache data not found!"};
-    return res.end(JSON.stringify(resData));
+    const fileName      = tradeBookData.filename;//ProductData.destination+'/'+
+
+    //const fileName  = 'tradeBook.csv';
+    const result    = [];
+    const sids      = await lib.sids();//.then(data=>data);
+    let sid         = '';
+    console.log('-: '+fileName+' :-')
+
+    fs.createReadStream("./public/tradebook/"+fileName)
+            //.pipe(csvParser())
+            .pipe(parse({ delimiter: ",", from_line: 2, to_line: 4000 }))
+            .on("data", (data) => {
+                result.push(data);
+            })
+            .on("end", () => {
+                let tradeRows = undefined;
+                let arr = undefined;
+                
+                result.forEach(async (row)=>{
+                    sid = sids.find((element)=> element.stock == row[1])?.sid;
+                    console.log('=: Sid : ', sid, ' : ', row[1], ' : ', row[0]);
+
+                    arr = {
+                            'sid':sid,
+                            'date':row[0], 
+                            'stock':row[1],  
+                            'action':row[2], 
+                            'qty':row[3], 
+                            'price':row[4], 
+                            'tradeValue':row[5], 
+                            'orderRef':row[6], 
+                            'settlement':row[7], 
+                            'segment':row[8], 
+                            'DpidClientId':row[9], 
+                            'exchange':row[10], 
+                            'stt':row[11], 
+                            'transactionSebiTurnoverCharges':row[12], 
+                            'stampDuty':row[13], 
+                            'brokerageServiceTax':row[14], 
+                            'brokerageTaxes':row[15]
+                        };
+                
+                    const doc = await Tradebook.updateOne({ orderRef: row[6] }, arr, { upsert: true });
+                    //console.log(doc);
+                });
+                
+            })
+            .on("error", function (error) {
+                console.log(error.message);
+            });;
     
+    let resData = {"status":201, msg:"LTP cache data not found!....", tda:result};
+    console.log('-: Completed :-');
+    return res.end(JSON.stringify(resData));
 }
 
 
