@@ -7,9 +7,9 @@ const Stock         = require('../models/stock');
 const Balancesheet  = require('../models/balancesheet');
 const Transaction   = require('../models/transaction');
 const Tradebook     = require('../models/tradebook');
+const Tradebookipo  = require('../models/tradebookipo');
 const lib           = require("../controllers/library");
     
-
 const apiList       = {
                         tickertape: 'https://quotes-api.tickertape.in/quotes?sids=',//DABU
                         groww: 'https://groww.in/v1/api/charting_service/v2/chart/delayed/exchange/NSE/segment/CASH/',//CAMPUS/all?intervalInDays=3&minimal=true';
@@ -27,17 +27,28 @@ exports.getStockList = async (req, res, next) => {
         return res.end(JSON.stringify(resData));
     }
    
-    let fields      = { "_id": 0, "sid": 1, "share_name": 1, "qty": 1, "sold_qty": 1 };
-    let sidsData    = await Stock.find({}, fields).limit(300)
+    let fields      = { "_id": 0, "sid": 1, "share_name": 1, "qty": 1, "sold_qty": 1, "stock": 1 };
+    let sidsData    = await Stock.aggregate([
+                                { $sort:{ sid : 1 }},
+                                { 
+                                    $match: { 
+                                        ////qty:{ $gt: 0 }, 
+                                        sid: {$ne:null} 
+                                    } 
+                                },
+                                //{ $match: { sid:{ $in:['HAP', 'HUDC', 'DABU', 'ASOK', 'DOLA', 'BION', 'ADAN']}} },
+                                { $project: fields }
+                            ])
                             .then(data=>{
                                 return data;
                             })
                             .catch(err=>console.log(err));
+                            //.find({}, fields).limit(3000)
     
     let sids    = sidsData.map(data=>data.sid).toString();
     let sidData = {};
     sidsData.forEach(data=>{
-        sidData[data.sid] = {"sid": data.sid, "share_name": data.share_name, "qty": data.qty, "sold_qty": data.sold_qty, "cqty": (data.qty-data.sold_qty)};
+        sidData[data.sid] = {"sid": data.sid, "stock": data.stock, "share_name": data.share_name, "qty": data.qty, "sold_qty": data.sold_qty, "cqty": (data.qty-data.sold_qty)};
     });
     
 
@@ -67,6 +78,106 @@ exports.getNetworth = async (req, res, next) => {
                                 .catch(err=>console.log(err));
     
     return res.end(JSON.stringify(balanceData));
+}
+
+exports.getTradeData = async (req, res, next) => {
+    let cacheSidData    = myCache.get("cacheSidData");
+    let cacheApiData    = myCache.get("cacheApiData");  
+    let buyArr          = {};
+    let sellArr         = {};
+    let ltpArr          = {};
+    let currentObj      = {};
+    let currentArr      = [];
+    let element         = {};
+    let stockArr        = {};
+
+    if(cacheSidData === undefined && cacheApiData === undefined){
+        let resData = {"status":201, msg:"cacheApiData not found!"};
+        return res.end(JSON.stringify(resData));
+    }
+
+    let tradebookipo 
+        = await Tradebookipo.aggregate([
+            { $project: { _id:0, sid:1, qty:1, action:1 } },
+            { $group: { _id: { sid: "$sid" }, cnt: { $sum: "$qty"  } } },
+            { $sort:{ sid : 1 }},
+        ]).then(data=>{
+            return data
+        }).catch();
+
+    tradebookipo.forEach((val, key)=>{
+        buyArr[val._id.sid] = val.cnt;
+        ltpArr[val._id.sid] = cacheApiData.find(item => item.sid === val._id.sid)?.price;
+    });
+
+
+    let tradeDetails  
+        = await Tradebook.aggregate([
+            { $project: { _id:0, sid:1, qty:1, action:1 } },
+            // { $match: { sid:{ $in:['REFE', 'HUDC', 'DABU', 'ASOK', 'DOLA', 'BION', 'ADAN']}} },
+            { $group: { _id: { sid: "$sid", type: "$action" }, cnt: { $sum: "$qty"  } } },
+            
+            { $sort:{ sid : 1 }},
+            //{ $group: { _id: { sid: "$sid", type: "$action" }, count: { $count: {} } } }
+            // {
+            //     _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
+            //     totalAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+            //     count: { $sum: 1 }
+            // }
+        ]).then(data=>{
+            return data;
+        }).catch();
+
+    let tranData = await Tradebook.find().sort({"sid":1}).then(data=>{
+        return data;
+    }).catch();
+
+
+    tradeDetails.forEach((val, key)=>{
+        
+        if(val._id.type === 'Buy'){
+            if(buyArr[val._id.sid] !== undefined){
+                buyArr[val._id.sid] += val.cnt;
+            }
+            else{
+                buyArr[val._id.sid] = val.cnt;
+            }
+        }
+        
+        if(val._id.type === 'Sell'){
+            sellArr[val._id.sid] = val.cnt;
+        }
+
+        ltpArr[val._id.sid]     = cacheApiData.find(item => item.sid === val._id.sid)?.price;
+        stockArr[val._id.sid]   = cacheSidData[val._id.sid]['stock'];
+    });
+
+
+    let cnt = 0;
+    let cmp = 0;
+    let currentVal  = 0;
+    tradebookipo.forEach((val, key)=>{
+        buyArr[val.sid] = val.qty;
+    });
+
+    for (const [key, value] of Object.entries(buyArr)) {
+        cnt = value;
+        if(sellArr[key] !== undefined){
+            cnt = value-sellArr[key];
+        }
+
+        if(cnt>0){
+            currentVal      = ltpArr[key] ? parseInt(cnt*ltpArr[key]) : 0;
+            cmp             += currentVal;
+
+            currentObj[key] = {qty:cnt, ltp:ltpArr[key], stock:stockArr[key], val:currentVal, cmp:cmp};
+            currentArr.push({sid:key, stock:stockArr[key], qty:cnt, ltp:ltpArr[key], val:currentVal, cmp:cmp});
+        }
+    }
+
+    ///console.log(typeof currentObj);
+    currentArr.sort( (a,b) => a.stock - b.stock );
+    return res.end(JSON.stringify({ cmp:cmp, currentArr:currentArr}));
 }
 
 function weeklydata(apiData){
@@ -99,7 +210,7 @@ function weeklydata(apiData){
 }
 
 exports.getShareDetails = async (req, res, next) => {
-    //let data            = undefined;
+    ///let data            = undefined;
     let duration        = undefined;
     let interval        = undefined;
     let apiUrl          = undefined;

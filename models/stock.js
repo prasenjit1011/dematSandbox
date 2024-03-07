@@ -6,6 +6,10 @@ const stockSchema = new Schema({
     type: String,
     required: true
   },
+  stock:{
+    type: String,
+    required: true
+  },
   share_name: {
     type: String,
     required: true

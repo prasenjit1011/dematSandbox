@@ -7,6 +7,6 @@ router.get('/networth', stockCtrl.getNetworth);
 router.get('/stock/details/:sid', stockCtrl.getShareDetails);
 router.get('/update/stock/details', stockCtrl.updateStockData);
 router.post('/uploadFile', stockCtrl.tradeBook);
-
+router.get('/tradedata', stockCtrl.getTradeData);
 
 module.exports  = router;
