@@ -56,8 +56,8 @@ exports.getStockList = async (req, res, next) => {
     fetch(apiUrl)
             .then(result=>result.json())
             .then(apiData => {
-                myCache.set( "cacheSidData", sidData, 3000 );
-                myCache.set( "cacheApiData", apiData['data'], 3000 );
+                myCache.set( "cacheSidData", sidData, 300 );
+                myCache.set( "cacheApiData", apiData['data'], 300 );
                 let resData = {"status":200, msg:"LTP fetch successfully!", sidData:sidData, apiData:apiData['data']};
                 return res.end(JSON.stringify(resData));
             })
@@ -100,9 +100,6 @@ const updBalancesheet = async (todayChange, cmp) => {
 
 
 exports.getTradeData = async (req, res, next) => {
-
-    //await Balancesheet.insertMany([{ipo_current_share_price:998}]);
-
     let cacheSidData    = myCache.get("cacheSidData");
     let cacheApiData    = myCache.get("cacheApiData");  
     let buyArr          = {};
@@ -118,7 +115,6 @@ exports.getTradeData = async (req, res, next) => {
         let resData = {"status":201, msg:"cacheApiData not found!"};
         return res.end(JSON.stringify(resData));
     }
-    //return res.end(JSON.stringify(cacheApiData));
 
     let tradebookipo 
         = await Tradebookipo.aggregate([
@@ -142,7 +138,7 @@ exports.getTradeData = async (req, res, next) => {
             { $group: { _id: { sid: "$sid", type: "$action" }, cnt: { $sum: "$qty"  } } },
             
             { $sort:{ sid : 1 }},
-            ////{ $group: { _id: { sid: "$sid", type: "$action" }, count: { $count: {} } } }
+            //{ $group: { _id: { sid: "$sid", type: "$action" }, count: { $count: {} } } }
             // {
             //     _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
             //     totalAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
@@ -178,8 +174,6 @@ exports.getTradeData = async (req, res, next) => {
     });
 
 
-    console.log(ltpArr);
-
     let cnt = 0;
     let cmp = 0;
     let currentVal  = 0;   
@@ -197,8 +191,6 @@ exports.getTradeData = async (req, res, next) => {
         if(cnt>0){
             currentVal      = ltpArr[key] ? parseInt(ltpArr[key])*cnt : 0;
             cmp             += currentVal;
-
-            //console.log('-: todayChange :-', key, ' : ', todayChange, cnt, parseInt(stockDetails[key]?.change));
             if(stockDetails[key]?.change){
                 todayChange     += parseInt(stockDetails[key]?.change)*cnt;
             }
@@ -208,11 +200,8 @@ exports.getTradeData = async (req, res, next) => {
         }
     }
 
-    updBalancesheet(todayChange, cmp);
-    
-    ///console.log(typeof currentObj);
+    updBalancesheet(todayChange, cmp);    
     currentArr.sort( (a,b) => a.stock - b.stock );
-    //console.log(currentArr);
     return res.end(JSON.stringify({ cmp:cmp, currentArr:currentArr}));
 }
 
