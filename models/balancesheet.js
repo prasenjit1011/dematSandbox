@@ -4,7 +4,7 @@ const Schema    = mongoose.Schema;
 const balanceSchema = new Schema({
     id:{
         type: Number,
-        required:true,
+        required:false,
     },
     day_status:{
         type: Number,
@@ -52,6 +52,18 @@ const balanceSchema = new Schema({
     },
     working_money:{
         type: Number,
+        required: false
+    },
+    created_at:{
+        type: Date,
+        required: false
+    },
+    updated_at:{
+        type: Date,
+        required: false
+    },
+    testcol:{
+        type: Date,
         required: false
     }
 }, { timestamps: true });

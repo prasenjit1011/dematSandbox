@@ -56,8 +56,8 @@ exports.getStockList = async (req, res, next) => {
     fetch(apiUrl)
             .then(result=>result.json())
             .then(apiData => {
-                myCache.set( "cacheSidData", sidData, 300 );
-                myCache.set( "cacheApiData", apiData['data'], 300 );
+                myCache.set( "cacheSidData", sidData, 3000 );
+                myCache.set( "cacheApiData", apiData['data'], 3000 );
                 let resData = {"status":200, msg:"LTP fetch successfully!", sidData:sidData, apiData:apiData['data']};
                 return res.end(JSON.stringify(resData));
             })
@@ -71,7 +71,7 @@ exports.getStockList = async (req, res, next) => {
 
 exports.getNetworth = async (req, res, next) => {
 
-    let balanceData    = await Balancesheet.find().sort({created_at: "descending"}).limit(300)
+    let balanceData    = await Balancesheet.find().sort({createdAt: "descending"}).limit(300)
                                 .then(data=>{
                                     return data;
                                 })
@@ -80,7 +80,29 @@ exports.getNetworth = async (req, res, next) => {
     return res.end(JSON.stringify(balanceData));
 }
 
+const updBalancesheet = async (todayChange, cmp) => {
+    if(todayChange>0){
+        var start = new Date();
+        start.setHours(0,0,0,0);
+    
+        var end = new Date();
+        end.setHours(23,59,59,999);
+        await Balancesheet
+                .updateOne(
+                    { createdAt: {$gte: start, $lt: end}}, 
+                    { day_status:todayChange, current_share_price:cmp}, 
+                    { upsert: true, new: true })
+                .then(data=>{   return data;    })
+                .catch(err=>console.log(err));
+    
+    }
+}
+
+
 exports.getTradeData = async (req, res, next) => {
+
+    //await Balancesheet.insertMany([{ipo_current_share_price:998}]);
+
     let cacheSidData    = myCache.get("cacheSidData");
     let cacheApiData    = myCache.get("cacheApiData");  
     let buyArr          = {};
@@ -90,11 +112,13 @@ exports.getTradeData = async (req, res, next) => {
     let currentArr      = [];
     let element         = {};
     let stockArr        = {};
+    let stockDetails    = {};
 
     if(cacheSidData === undefined && cacheApiData === undefined){
         let resData = {"status":201, msg:"cacheApiData not found!"};
         return res.end(JSON.stringify(resData));
     }
+    //return res.end(JSON.stringify(cacheApiData));
 
     let tradebookipo 
         = await Tradebookipo.aggregate([
@@ -118,7 +142,7 @@ exports.getTradeData = async (req, res, next) => {
             { $group: { _id: { sid: "$sid", type: "$action" }, cnt: { $sum: "$qty"  } } },
             
             { $sort:{ sid : 1 }},
-            //{ $group: { _id: { sid: "$sid", type: "$action" }, count: { $count: {} } } }
+            ////{ $group: { _id: { sid: "$sid", type: "$action" }, count: { $count: {} } } }
             // {
             //     _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
             //     totalAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
@@ -148,14 +172,18 @@ exports.getTradeData = async (req, res, next) => {
             sellArr[val._id.sid] = val.cnt;
         }
 
+        stockDetails[val._id.sid]   = cacheApiData.find(item => item.sid === val._id.sid);
         ltpArr[val._id.sid]     = cacheApiData.find(item => item.sid === val._id.sid)?.price;
         stockArr[val._id.sid]   = cacheSidData[val._id.sid]['stock'];
     });
 
 
+    console.log(ltpArr);
+
     let cnt = 0;
     let cmp = 0;
-    let currentVal  = 0;
+    let currentVal  = 0;   
+    let todayChange = 0;
     tradebookipo.forEach((val, key)=>{
         buyArr[val.sid] = val.qty;
     });
@@ -167,16 +195,24 @@ exports.getTradeData = async (req, res, next) => {
         }
 
         if(cnt>0){
-            currentVal      = ltpArr[key] ? parseInt(cnt*ltpArr[key]) : 0;
+            currentVal      = ltpArr[key] ? parseInt(ltpArr[key])*cnt : 0;
             cmp             += currentVal;
 
+            //console.log('-: todayChange :-', key, ' : ', todayChange, cnt, parseInt(stockDetails[key]?.change));
+            if(stockDetails[key]?.change){
+                todayChange     += parseInt(stockDetails[key]?.change)*cnt;
+            }
+
             currentObj[key] = {qty:cnt, ltp:ltpArr[key], stock:stockArr[key], val:currentVal, cmp:cmp};
-            currentArr.push({sid:key, stock:stockArr[key], qty:cnt, ltp:ltpArr[key], val:currentVal, cmp:cmp});
+            currentArr.push({sid:key, stock:stockArr[key], qty:cnt, ltp:ltpArr[key], val:currentVal, cmp:cmp, change:stockDetails[key]?.change    });
         }
     }
 
+    updBalancesheet(todayChange, cmp);
+    
     ///console.log(typeof currentObj);
     currentArr.sort( (a,b) => a.stock - b.stock );
+    //console.log(currentArr);
     return res.end(JSON.stringify({ cmp:cmp, currentArr:currentArr}));
 }
 
