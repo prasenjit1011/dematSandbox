@@ -81,7 +81,8 @@ exports.getNetworth = async (req, res, next) => {
 }
 
 const updBalancesheet = async (todayChange, cmp) => {
-    if(todayChange>0){
+
+    if(todayChange != 0){
         var start = new Date();
         start.setHours(0,0,0,0);
     
@@ -205,8 +206,10 @@ exports.getTradeData = async (req, res, next) => {
                 iciciStock  = 'NA'
             }
             
+            stockTotalChange = cnt*stockDetails[key]?.change;
+
             currentObj[key] = {qty:cnt, ltp:ltpArr[key], stock:iciciStock, currentVal:currentVal, cmp:cmp};
-            currentArr.push({sid:key, stock:iciciStock, qty:cnt, ltp:ltpArr[key], currentVal:currentVal, cmp:cmp, change:stockDetails[key]?.change    });
+            currentArr.push({sid:key, stock:iciciStock, qty:cnt, ltp:ltpArr[key], currentVal:currentVal, cmp:cmp, change:stockDetails[key]?.change, stockTotalChange:stockTotalChange, dyChange:stockDetails[key]?.dyChange    });
         }
     }
 
