@@ -126,10 +126,11 @@ exports.getTradeData = async (req, res, next) => {
         }).catch();
 
     tradebookipo.forEach((val, key)=>{
-        buyArr[val._id.sid] = val.cnt;
-        ltpArr[val._id.sid] = cacheApiData.find(item => item.sid === val._id.sid)?.price;
+        buyArr[val._id.sid]         = val.cnt;
+        ltpArr[val._id.sid]         = cacheApiData.find(item => item.sid === val._id.sid)?.price;
+        stockDetails[val._id.sid]   = cacheApiData.find(item => item.sid === val._id.sid);
+        stockArr[val._id.sid]       = cacheSidData[val._id.sid]['stock'];      
     });
-
 
     let tradeDetails  
         = await Tradebook.aggregate([
@@ -169,8 +170,8 @@ exports.getTradeData = async (req, res, next) => {
         }
 
         stockDetails[val._id.sid]   = cacheApiData.find(item => item.sid === val._id.sid);
-        ltpArr[val._id.sid]     = cacheApiData.find(item => item.sid === val._id.sid)?.price;
-        stockArr[val._id.sid]   = cacheSidData[val._id.sid]['stock'];
+        ltpArr[val._id.sid]         = cacheApiData.find(item => item.sid === val._id.sid)?.price;
+        stockArr[val._id.sid]       = cacheSidData[val._id.sid]['stock'];
     });
 
 
@@ -178,6 +179,7 @@ exports.getTradeData = async (req, res, next) => {
     let cmp = 0;
     let currentVal  = 0;   
     let todayChange = 0;
+    let iciciStock  = '';
     tradebookipo.forEach((val, key)=>{
         buyArr[val.sid] = val.qty;
     });
@@ -195,14 +197,22 @@ exports.getTradeData = async (req, res, next) => {
                 todayChange     += parseInt(stockDetails[key]?.change)*cnt;
             }
 
-            currentObj[key] = {qty:cnt, ltp:ltpArr[key], stock:stockArr[key], val:currentVal, cmp:cmp};
-            currentArr.push({sid:key, stock:stockArr[key], qty:cnt, ltp:ltpArr[key], val:currentVal, cmp:cmp, change:stockDetails[key]?.change    });
+
+            if(stockArr[key] != undefined || stockArr[key] != ''){
+                iciciStock  = stockArr[key];
+            }
+            else{
+                iciciStock  = 'NA'
+            }
+            
+            currentObj[key] = {qty:cnt, ltp:ltpArr[key], stock:iciciStock, currentVal:currentVal, cmp:cmp};
+            currentArr.push({sid:key, stock:iciciStock, qty:cnt, ltp:ltpArr[key], currentVal:currentVal, cmp:cmp, change:stockDetails[key]?.change    });
         }
     }
 
     updBalancesheet(todayChange, cmp);    
     currentArr.sort( (a,b) => a.stock - b.stock );
-    return res.end(JSON.stringify({ cmp:cmp, currentArr:currentArr}));
+    return res.end(JSON.stringify({ cmp:cmp, currentArr:currentArr, todayChange:todayChange}));
 }
 
 function weeklydata(apiData){
